@@ -6,10 +6,12 @@ Created on Thu Nov 16 10:40:44 2017
 @author: juan
 """
 
+# Download TASS dataset from http://tass.sepln.org/2017/
+
 import pandas as pd
 pd.set_option('max_colwidth',1000)
 
-# Si alguno de los archivos está en .xml, lo importamos y convertimos a un dataframe
+# Import and convert .xml files
 
 from lxml import objectify
 
@@ -36,11 +38,11 @@ notas = notas.astype(str)
 train_set = pd.merge(tweets_corpus, notas, on='tweetid', sort=False)
 train_set = train_set.drop('tweetid', axis=1)
 
-# Creamos dos nuevas columnas: positivo_bin y negativo_bin. Ponemos un 1 
-# cuando el tuit sea positivo o negativo. Si no, ponemos un 0.
-# Con esto, el problema cambio a ser dos problemas de clasificacion binaria y usamos
+# We create two new columns: positivo_bin and negativo_bin. We put a 1
+# when the tweet is positive or negative. If not, we put a 0.
+# With this, the problem changed to two binary classification problems and we used
 # ROC_AUC (area under the curve).
-# Utilizamos como modelo Linear Support Vector Classifier from sklearn
+# We use as a model Linear Support Vector Classifier from sklearn
 
 train_set['positivo_bin']=0
 train_set['negativo_bin']=0
@@ -59,7 +61,7 @@ non_words = list(punctuation)
 non_words.extend(['¿', '¡'])
 non_words.extend(map(str,range(10)))
 
-# Creamos una funcion que haga stem de las palabras.
+# Create a function for stemming words
 # based on http://www.cs.duke.edu/courses/spring14/compsci290/assignments/lab02.html
 
 from nltk.stem import SnowballStemmer
@@ -87,7 +89,7 @@ def tokenize(text):
         stems = ['']
     return stems
 
-# Buscamos los mejores parametros para un LinearSVC que clasifique positivos
+# Look for the best parameters for positive classification
     
 from sklearn.feature_extraction.text import CountVectorizer       
 from sklearn.svm import LinearSVC
@@ -120,13 +122,13 @@ grid_search.fit(train_set.content, train_set.positivo_bin)
 
 grid_search.best_params_
 
-# Guardamos el LinearSVC como pickle
+# Save the LinearSVC as a pickle
 
 from sklearn.externals import joblib
 joblib.dump(grid_search, 'svc_pos.pkl')
 
-# Hacemos cross-validation con 10 folds. En model ponemos los parámetros que obtuvimos
-# con best_params_
+# We do cross-validation with 10 folds. In model we put the parameters that we obtained
+# with best_params_ 
 
 from sklearn.model_selection import cross_val_score
 
@@ -160,7 +162,7 @@ scores = cross_val_score(
 
 scores.mean()
 
-# Buscamos los mejores parametros para un LinearSVC que clasifique negativos
+# We look for the best parameters for a LinearSVC that classifies negatives
 
 vectorizer = CountVectorizer(
                 analyzer = 'word',
@@ -188,12 +190,12 @@ grid_search2.fit(train_set.content, train_set.negativo_bin)
 
 grid_search2.best_params_
 
-# Guardamos el LinearSVC como pickle
+# Save the LinearSVC as a pickle
 
 joblib.dump(grid_search2, 'svc_neg.pkl')
 
-# Hacemos cross-validation con 10 folds. En model ponemos los parámetros que obtuvimos
-# con best_params_
+# We do cross-validation with 10 folds. In model we put the parameters that we obtained
+# with best_params_ 
 
 model = LinearSVC(C=0.2, loss='hinge',max_iter=500,multi_class='ovr',
               random_state=None,
@@ -225,7 +227,7 @@ scores = cross_val_score(
 
 scores.mean()
 
-# Entrenamiento de un modelo con parametros basados en la literatura
+# Training of a single model
 
 vectorizer = CountVectorizer(
                 analyzer = 'word',
