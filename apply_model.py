@@ -60,17 +60,3 @@ def dar_sentimiento(lista_tweets):
     df.drop(['positivo','negativo'], axis=1, inplace=True)
     dictionary = {df.texto[i]: np.asscalar(df.sentimiento[i]) for i in range(len(df))}
     return dictionary
-
-# Ejemplo 1
-import csv
-
-marcasBajaton = pd.read_csv('marcasBajaton.csv', header=0, encoding='utf-8')
-lista_marcas = marcasBajaton['2013'].tolist()
-
-for marca in lista_marcas:
-    ejemplo = pd.read_csv(marca, header=0, encoding='utf-8')
-    lista_tweets = ejemplo.CONTENT.values.tolist()
-    salida = dar_sentimiento(lista_tweets)
-    w = csv.writer(open(marca, 'w'))
-    for key, val in salida.items():
-        w.writerow([key, val])
