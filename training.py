@@ -1,11 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-Created on Thu Nov 16 10:40:44 2017
-
-@author: juan
-"""
-
 # Download TASS dataset from http://tass.sepln.org/2017/
 
 import pandas as pd
