@@ -1,11 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-Created on Thu Nov 16 10:40:44 2017
-
-@author: juan
-"""
-
 import pandas as pd
 from lxml import objectify
 from sklearn.model_selection import train_test_split
